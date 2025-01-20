@@ -3,7 +3,8 @@
 ###
 
 weather_variables_inverstigate <- function(Corrected_All_245, Corrected_All_585, preles_site_normal, site, comparison, pPREL_site, no_co2 = F, pdf_print = T) {
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
+  bias_correction_direct <- "~/Documents/Tandem_Data_and_Plots/Code/Bias_Correction_Data/"
+  calibration_direct <- "~/Documents/Tandem_Data_and_Plots/Code/Callibration/"
   if (pdf_print) {
     if (no_co2) {
       pdf(paste0(bias_correction_direct, paste(site, comparison, "preles_variables_both_scenarios_no_co2", sep = "_"), ".pdf"))
@@ -13,9 +14,6 @@ weather_variables_inverstigate <- function(Corrected_All_245, Corrected_All_585,
   }
 
   ### Import data
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
-  calibration_direct <- "/home/joanna/Asiakirjat/CMIP6/Callibration/"
-
   if (site == "kun") {
     load(paste0(bias_correction_direct, "kun.weather.preles.RData"))
     load(paste0(bias_correction_direct, "stkat.weather.preles.RData"))
@@ -35,6 +33,7 @@ weather_variables_inverstigate <- function(Corrected_All_245, Corrected_All_585,
       weather_reference <- weather_reference[!find_leap(weather_reference$YMD),]
       weather_reference$DoY <- rep(1:365, length.out = nrow(weather_reference))
       if ("TotPAR" %in% names(weather_reference)) {names(weather_reference) = gsub("TotPAR", "PAR", names(weather_reference))}
+      # TODO: aggregate has issues
       weather_reference_mean <- aggregate(.~DoY, weather_reference, mean)
 
       preles_reference <- data.frame(GPP = preles_site_normal[[1]],

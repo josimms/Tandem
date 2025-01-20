@@ -1,6 +1,6 @@
 co2_data <- function(ssp, downloaded = T) {
-  temperory_direct <- "/home/joanna/Asiakirjat/CMIP6/Temperory_CMIP6/"
-  answer_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
+  temperory_direct <- "~/Documents/Tandem_Data_and_Plots/Temp/"
+  answer_direct <- "~/Documents/Tandem_Data_and_Plots/Code/Bias_Correction_Data/"
 
   preles_norunda_weather <- loadRData(paste0(bias_correction_direct, "preles_norunda_weather.RData"))
   if ("TotPAR" %in% names(preles_norunda_weather)) names(preles_norunda_weather) <- gsub("Tot", "", names(preles_norunda_weather))
@@ -9,10 +9,10 @@ co2_data <- function(ssp, downloaded = T) {
   if (downloaded) {
     if (ssp == 245) {
       file_names = paste0(temperory_direct, list.files(path = temperory_direct, pattern = "co2_Amon_CESM2-WACCM_ssp245"))
-      source_id = lapply(lapply(file_names, strsplit, "_"), function(x) {x[[1]][[4]]})[[1]]
+      source_id = lapply(lapply(file_names, strsplit, "_"), function(x) {x[[1]][[6]]})[[1]]
     } else if (ssp == 585) {
       file_names = paste0(temperory_direct, list.files(path = temperory_direct, pattern = "co2_Amon_CESM2-WACCM_ssp585"))
-      source_id = lapply(lapply(file_names, strsplit, "_"), function(x) {x[[1]][[4]]})[[1]]
+      source_id = lapply(lapply(file_names, strsplit, "_"), function(x) {x[[1]][[6]]})[[1]]
     } else {
       stop("Scenario not planned for!")
     }

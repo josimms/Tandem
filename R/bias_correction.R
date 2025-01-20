@@ -2,15 +2,14 @@
 # Make the data averaged over the history for the rest of the dataset
 ####
 
-bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR.plot = F) {
+bias_correction <- function(bias_correction_direct, dataset_cmip, source_id, ssp_scenario, plot = T, PAR.plot = F) {
   ###
   # Load data
   ###
-  bias_correction <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
-  load(paste0(bias_correction, "preles_norunda_weather.RData"))
-  load(paste0(bias_correction, "preles_wust_weather.RData"))
-  load(paste0(bias_correction, "kun.weather.preles.RData"))
-  load(paste0(bias_correction, "stkat.weather.preles.RData"))
+  load(paste0(bias_correction_direct, "preles_norunda_weather.RData"))
+  load(paste0(bias_correction_direct, "preles_wust_weather.RData"))
+  load(paste0(bias_correction_direct, "kun.weather.preles.RData"))
+  load(paste0(bias_correction_direct, "stkat.weather.preles.RData"))
 
   ###
   # Site data formatting
@@ -121,8 +120,9 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   kun_dataset_out$fAPAR <- rep(kun_fAPAR, length.out = nrow(kun_dataset_out))
   nor_dataset_out$fAPAR <- rep(norunda_fAPAR, length.out = nrow(nor_dataset_out))
   month.length = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-  kun_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = F), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(kun_dataset_out))
-  nor_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = F), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(nor_dataset_out))
+  ssp_scenario = 245
+  kun_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = T), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(kun_dataset_out))
+  nor_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = T), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(nor_dataset_out))
   kun_dataset_out$date <- dataset_cmip$date
   nor_dataset_out$date <- dataset_cmip$date
   kun_dataset_out <- kun_dataset_out[substring(kun_dataset_out$date, 1, 4) < 2100,]
@@ -131,8 +131,8 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   ###
   # Save file!
   ###
-  write.csv(kun_dataset_out, file = paste(bias_correction, source_id, ssp_scenario, "kun.csv", sep = "_"), row.names = F)
-  write.csv(nor_dataset_out, file = paste(bias_correction, source_id, ssp_scenario, "nor.csv", sep = "_"), row.names = F)
+  write.csv(kun_dataset_out, file = paste(bias_correction_direct, source_id, ssp_scenario, "kun.csv", sep = "_"), row.names = F)
+  write.csv(nor_dataset_out, file = paste(bias_correction_direct, source_id, ssp_scenario, "nor.csv", sep = "_"), row.names = F)
   ### Return dataset
   datasets_out <- list("kun" = kun_dataset_out,
                        "nor" = nor_dataset_out)

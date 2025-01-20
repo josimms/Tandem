@@ -1,5 +1,5 @@
 soil_parameters_investigate <- function(Corrected_All_245, Corrected_All_585, models_245, models_585, site, no_co2 = F, pdf_print = T) {
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
+  bias_correction_direct <- "~/Documents/Tandem_Data_and_Plots/Code/Bias_Correction_Data/"
   if (pdf_print) {
     if (no_co2) {
       pdf(paste0(bias_correction_direct, paste(site, "preles_soil_parameters_both_scenarios_no_co2", sep = "_"), ".pdf"))
@@ -9,8 +9,6 @@ soil_parameters_investigate <- function(Corrected_All_245, Corrected_All_585, mo
   }
 
   ### Import data
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
-  # calibration_direct <- "/home/joanna/Asiakirjat/CMIP6/Callibration/"
 
   if (site == "kun") {
     load(paste0(bias_correction_direct, "kun.weather.preles.RData"))

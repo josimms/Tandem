@@ -2,8 +2,7 @@
 # Preles Scenario plotter, with grey for other scenarios and then coloured for the rest of the scenarios
 ####
 
-preles_scenario_plotter_yearly <- function(preles_out_list_245, preles_out_list_585, models_245, models_585, site, scenario, pdf_print = T) {
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
+preles_scenario_plotter_yearly <- function(bias_correction_direct, preles_out_list_245, preles_out_list_585, models_245, models_585, site, scenario, pdf_print = T) {
   if (pdf_print) {
     pdf(paste0(bias_correction_direct, paste(site, "preles_basic_output", sep = "_"), ".pdf"))
   }

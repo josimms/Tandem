@@ -3,7 +3,7 @@ southern_future_north_comparison <- function(models, preles_north_normal, preles
   # Files
   ###
   # Inport Data
-  bias_correction_direct <- "/home/joanna/Asiakirjat/CMIP6/Bias_Correction_Data/"
+  bias_correction_direct <- "~/Documents/Tandem_Data_and_Plots/Code/Bias_Correction_Data/"
 
   # Start PDF
   if (pdf_print) {
