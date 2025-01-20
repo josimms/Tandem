@@ -1,7 +1,13 @@
 ####
 # Muted
 ####
-muted <- khroma::colour("muted")
+colours_cb <- khroma::colour("vibrant")
+colours_cb_245 <- khroma::colour("highcontrast")
+colours_cb_585 <- khroma::colour("highcontrast")
+
+colours_pale <- khroma::colour("light")
+
+colours_cb_2 <- khroma::colour("vibrant")
 
 ####
 # RData to onject - ricardo stack exchange!
