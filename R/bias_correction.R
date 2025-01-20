@@ -20,6 +20,8 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   mean.kun.weather <- aggregate(cbind(TAir, VPD, PAR, CO2, Precip, fAPAR)~DoY, mean.temp.kun.weather, mean)
   mean.kun.weather <- mean.kun.weather[-60,] # 29th Feb removed
 
+  if ("TotPAR" %in% names(preles_norunda_weather)) names(preles_norunda_weather) <- gsub("Tot", "", names(preles_norunda_weather))
+  if ("DoY" %in% names(preles_norunda_weather)) names(preles_norunda_weather) <- gsub("DoY", "Date", names(preles_norunda_weather))
   mean.temp.nor.weather <- preles_norunda_weather[366:2557,] # PAR correct!
   mean.temp.nor.weather$DoY <- c(1:365, 1:366, 1:365, 1:365, 1:365, 1:366)
   mean.nor.weather <- aggregate(cbind(TAir, VPD, PAR, CO2, Precip, fAPAR)~DoY, mean.temp.nor.weather, mean)
@@ -37,41 +39,42 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   mean.dataset_cmip <- aggregate(cbind(TAir, VPD, PAR, Precip)~DoY, dataset_cmip_temp, mean) # Baseline created
 
   ### Difference between // mean(a) - mean(b) = mean(a-b)
-  kun_corrections.year <- mean.dataset_cmip[,c("TAir", "VPD", "PAR", "Precip")] - mean.kun.weather[,c("TAir", "VPD", "PAR", "Precip")]
+  kun_corrections.year <- mean.dataset_cmip[,c("TAir", "VPD", "Precip")] - mean.kun.weather[,c("TAir", "VPD", "Precip")]
   kun_corrections.year$DoY = 1:ndays
-  nor_corrections.year <- mean.dataset_cmip[,c("TAir", "VPD", "PAR", "Precip")] - mean.nor.weather[,c("TAir", "VPD", "PAR", "Precip")]
+  nor_corrections.year <- mean.dataset_cmip[,c("TAir", "VPD", "Precip")] - mean.nor.weather[,c("TAir", "VPD", "Precip")]
   nor_corrections.year$DoY = 1:ndays
 
   ###
   # PAR corrections
   ###
-  kun_corrections.year$DoY = nor_corrections.year$DoY = 1:ndays
-  kun_corrections.year_pattern <- aggregate(PAR ~ plyr::round_any(DoY, 5, f = ceiling), data = kun_corrections.year[,c("DoY", "PAR")], max)
-  nor_corrections.year_pattern <- aggregate(PAR ~ plyr::round_any(DoY, 5, f = ceiling), data = nor_corrections.year[,c("DoY", "PAR")], max)
-  names(kun_corrections.year_pattern)[1] <- names(nor_corrections.year_pattern)[1] <- "DoY"
+  #kun_corrections.year$DoY = nor_corrections.year$DoY = 1:ndays
+  #kun_corrections.year_pattern <- aggregate(PAR ~ plyr::round_any(DoY, 5, f = ceiling), data = kun_corrections.year[,c("DoY", "PAR")], max)
+  #nor_corrections.year_pattern <- aggregate(PAR ~ plyr::round_any(DoY, 5, f = ceiling), data = nor_corrections.year[,c("DoY", "PAR")], max)
+  #names(kun_corrections.year_pattern)[1] <- names(nor_corrections.year_pattern)[1] <- "DoY"
 
-  fun <- function(corrections.year_pattern, par, optimisation = T) {
-    PAR <- sum(abs(abs(corrections.year_pattern$PAR) - par[3]*dnorm(corrections.year_pattern$DoY, par[1], par[2])))
-  }
+  #fun <- function(corrections.year_pattern, par, optimisation = T) {
+  #  PAR <- sqrt(mean((corrections.year_pattern$PAR - par[3]*dnorm(corrections.year_pattern$DoY, par[1], par[2]))^2))
+  #}
 
-  kun_o = optim(par = c(183, 15, 30), fun, corrections.year_pattern = kun_corrections.year_pattern)
-  kun_params = kun_o$par
-  nor_o = optim(par = c(183, 15, 30), fun, corrections.year_pattern = nor_corrections.year_pattern)
-  nor_params = nor_o$par
-  if (PAR.plot == T) {
-    par(mfrow = c(1, 2))
-    plot(kun_corrections.year$PAR)
-    points(kun_corrections.year_pattern$DoY, kun_corrections.year_pattern$PAR, pch = 16, col = "blue")
-    lines(1:ndays, kun_params[3]*dnorm(1:ndays, kun_params[1], kun_params[2]), col = "blue")
+  #kun_o = optim(par = c(200, 20, 30), fun, corrections.year_pattern = kun_corrections.year_pattern)
+  #kun_params = kun_o$par
+  #nor_o = optim(par = c(200, 20, 30), fun, corrections.year_pattern = nor_corrections.year_pattern)
+  #nor_params = nor_o$par
+  #if (PAR.plot == T) {
+  #  par(mfrow = c(1, 2))
+  #  plot(kun_corrections.year$PAR, main = paste("Kun Correction:", source_id), ylab = "Sum PAR Daily Residuals", xlab = "Days of Year", bty = "n")
+  #  points(kun_corrections.year_pattern$DoY, kun_corrections.year_pattern$PAR, pch = 16, col = "blue")
+  #  lines(1:ndays, kun_params[3]*dnorm(1:ndays, kun_params[1], kun_params[2]), col = "blue")
+  #  legend(250, 32, c("Maximum", "Original", "Fit"), pch = c(16, 21, NA), lty = c(0, 0, 1), col = c("blue", "black", "blue"), bty = "n")
 
-    plot(nor_corrections.year$PAR) # TODO: why are these the same?
-    points(nor_corrections.year_pattern$DoY, nor_corrections.year_pattern$PAR, pch = 16, col = "blue")
-    lines(1:ndays, nor_params[3]*dnorm(1:ndays, nor_params[1], nor_params[2]), col = "blue")
-  }
+  #  plot(nor_corrections.year$PAR, main = paste("Nor Correction:", source_id), ylab = "Sum PAR Daily Residuals", xlab = "Days of Year", bty = "n")
+  #  points(nor_corrections.year_pattern$DoY, nor_corrections.year_pattern$PAR, pch = 16, col = "blue")
+  #  lines(1:ndays, nor_params[3]*dnorm(1:ndays, nor_params[1], nor_params[2]), col = "blue")
+  #}
 
   # Add to corrections
-  kun_corrections.year$PAR.smooth <- kun_params[3]*dnorm(1:ndays, kun_params[1], kun_params[2])
-  nor_corrections.year$PAR.smooth <- nor_params[3]*dnorm(1:ndays, nor_params[1], nor_params[2])
+  #kun_corrections.year$PAR.smooth <- kun_params[3]*dnorm(1:ndays, kun_params[1], kun_params[2])
+  #nor_corrections.year$PAR.smooth <- nor_params[3]*dnorm(1:ndays, nor_params[1], nor_params[2])
 
   # Make long enough
   kun_corrections <- NULL
@@ -86,8 +89,11 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   ###
   # Difference applied over future
   ###
-  kun_dataset_out = dataset_cmip[,c("TAir", "VPD", "PAR", "Precip")] - kun_corrections[,c("TAir", "VPD", "PAR.smooth", "Precip")]
-  nor_dataset_out = dataset_cmip[,c("TAir", "VPD", "PAR", "Precip")] - nor_corrections[,c("TAir", "VPD", "PAR.smooth", "Precip")]
+  kun_dataset_out = dataset_cmip[,c("TAir", "VPD", "Precip")] - kun_corrections[,c("TAir", "VPD", "Precip")]
+  nor_dataset_out = dataset_cmip[,c("TAir", "VPD", "Precip")] - nor_corrections[,c("TAir", "VPD", "Precip")]
+
+  kun_dataset_out$PAR <- dataset_cmip$PAR
+  nor_dataset_out$PAR <- dataset_cmip$PAR
 
   ###
   # Zero values
@@ -100,7 +106,6 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
 
   kun_dataset_out$PAR[kun_dataset_out$PAR < 0] <- 0
   nor_dataset_out$PAR[nor_dataset_out$PAR < 0] <- 0
-  # TODO: PAR values are still a cloud in the middle of the season, mend this!
 
   ###
   # fAPAR: Assuming growth is not wildly affected the fAPAR is assumed to be the same as now
@@ -115,6 +120,9 @@ bias_correction <- function(dataset_cmip, source_id, ssp_scenario, plot = T, PAR
   ###
   kun_dataset_out$fAPAR <- rep(kun_fAPAR, length.out = nrow(kun_dataset_out))
   nor_dataset_out$fAPAR <- rep(norunda_fAPAR, length.out = nrow(nor_dataset_out))
+  month.length = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  kun_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = F), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(kun_dataset_out))
+  nor_dataset_out$co2 <- rep(rep(co2_data(ssp_scenario, downloaded = F), rep(month.length, length.out = length(co2_data(ssp_scenario)))), length.out = nrow(nor_dataset_out))
   kun_dataset_out$date <- dataset_cmip$date
   nor_dataset_out$date <- dataset_cmip$date
   kun_dataset_out <- kun_dataset_out[substring(kun_dataset_out$date, 1, 4) < 2100,]
